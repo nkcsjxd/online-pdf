@@ -23,4 +23,7 @@
 
 # s = '十'
 # print(hex(ord(s)))
-print(chr(hex(62295)))
+# 替换 ASCII 之外的字符
+replace_chars = {'(cid:{})'.format(i): int(i)-62294}
+for k, v in replace_chars.items():
+    content = content.replace(k, v)
