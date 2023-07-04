@@ -36,7 +36,7 @@ def convert_pdf_to_txt(path):
     # text = re.sub(r'\n(\d)(?!D)', r'*\1', text)
     # print("text2: " + text)
     text = re.sub(r'\u0007', ' ', text)
-    text = re.sub(r'参考⽂献[\s\S]*', '', text)
+    text = re.sub(r'复习与思考[\s\S]*', '', text)
     # text = text.replace('\n', '')
 
     # pattern = r'\n0'
@@ -54,13 +54,35 @@ def txt_to_list(file_path):
     matches = re.findall(pattern, text)
     # 按照正则表达式对文本进行分段
     segments = re.split(pattern, text)
-    print(segments[0])
     # segments = re.split(r'\*', convert_pdf_to_txt(file_path))
-
-        
     segments[1:] = [matches[i] + segment + '\n' for i, segment in enumerate(segments[1:])]
-
-    return segments
+    content = ""
+    for segment in segments:
+        segment = segment.replace('\n', '', 1)
+        segment = segment.replace('\n', '#', 1)
+        segment = re.sub(r'。\n', '&', segment)
+        segment = segment.replace('\n', '')
+        segment = re.sub('&', "。\n", segment)
+        segment = re.sub('#', '\n', segment)
+        content += segment
+    # print(content)
+    new_pattern = r'\b(\d+\.\d)\b'
+    # new_pattern = re.compile('\n[⼀⼆三四五六七八⼋九十⼗/u4E00/u4E8C/u4E8C/u56DB/u4E94/u516D/u4E03/u516B/u4E5D/u5341]+、|\n⼗+[⼀⼆三四五六七八⼋九十⼗/u4E00/u4E8C/u4E8C/u56DB/u4E94/u516D/u4E03/u516B/u4E5D/u5341]+、')
+    # 获取模式的匹配列表
+    # new_matches = re.findall(new_pattern, content)
+    # 按照正则表达式对文本进行分段
+    new_segments = re.split(new_pattern, content)
+    # new_segments[1:] = [new_matches[i] + segment for i, segment in enumerate(new_segments[1:])]
+    # return new_segments
+    #提取分段后的结果
+    result = []
+    result.append(new_segments[0])
+    for i in range(1, len(new_segments), 2):
+        if i + 1 < len(new_segments):
+            s = new_segments[i] + new_segments[i+1]
+            if len(s) > 30:
+                result.append(s.strip())  # 添加到结果列表中
+    return result
 
 # def num_to_list(file_path):
 #     pattern = r'\b(10\.\d+\.\d+)\b'
